@@ -1,10 +1,10 @@
 # JOMO Studio — Brand Kit
 
 This directory formalizes the visual identity already approved and live on
-the JOMO Studio V2 website (`v2/`). It does not introduce anything new —
-every asset here is extracted directly from the current implementation
-(`v2/src/components/Nav.astro`, `Footer.astro`, `v2/public/favicon.svg`,
-`v2/src/styles/global.css`).
+the JOMO Studio website. It does not introduce anything new — every asset
+here is extracted directly from the current implementation
+(`src/components/Nav.astro`, `Footer.astro`, `public/favicon.svg`,
+`src/styles/global.css`).
 
 ## 1. Brand name
 
@@ -39,7 +39,7 @@ where there isn't room for it. This is the *only* standalone mark that
 exists in the approved identity — there is no separate abstract icon or
 symbol.
 
-`v2/public/favicon.svg` now shares this exact path geometry (see
+`public/favicon.svg` now shares this exact path geometry (see
 `docs/DECISIONS.md` ADR-011) — it previously rendered the "J" as live
 text dependent on the Golos Text web font being loaded, which is fragile
 for an asset requested as early as a favicon.
@@ -66,7 +66,7 @@ colors, anti-aliased, no re-drawing.
 | Body / UI (`--font-sans`) | **Inter** | 400 (body/lead text), 500 (nav/eyebrow labels), 600 (one specific emphasis case — the Process step's revision-count callout) | `-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif` |
 
 Both are open-source (SIL Open Font License) and served via Google
-Fonts — see `v2/src/layouts/Base.astro` for the exact loading setup.
+Fonts — see `src/layouts/Base.astro` for the exact loading setup.
 Source: [fonts.google.com/specimen/Golos+Text](https://fonts.google.com/specimen/Golos+Text),
 [fonts.google.com/specimen/Inter](https://fonts.google.com/specimen/Inter).
 Both were confirmed to have full Cyrillic + Cyrillic-ext coverage
@@ -80,7 +80,7 @@ reproduce the logo itself.
 
 ## 6. Colors
 
-Exact values from `v2/src/styles/global.css`, not re-derived or
+Exact values from `src/styles/global.css`, not re-derived or
 approximated:
 
 | Token | Hex / value | Use |
@@ -124,7 +124,7 @@ anything beyond that.
 
 `social/jomo-og-1200x630.svg` (editable vector source, text as outlined
 paths — same technique as the wordmark) and `social/jomo-og-1200x630.png`
-(the rendered export, also copied to `v2/public/og-image.png` and wired
+(the rendered export, also copied to `public/og-image.png` and wired
 into the site's Open Graph/Twitter Card metadata — see
 `docs/DECISIONS.md` ADR-011).
 
@@ -146,7 +146,7 @@ separate, later task.
 ## 11. Asset list
 
 ```
-v2/brand/
+brand/
   README.md
   logo/
     jomo-wordmark-dark.svg

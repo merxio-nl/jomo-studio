@@ -1,22 +1,36 @@
-# JOMO Studio — Portfolio V2
+# JOMO Studio
 
-Astro-based rebuild of the portfolio, alongside the current production
-site at the repository root. See `docs/PROJECT.md` and
-`docs/DECISIONS.md` at the repo root for background and architecture
-rationale (ADR-006/007 for the original stack/IA, ADR-009 for the
-three-locale setup, ADR-010 for the SEO/production-readiness pass,
-ADR-011 for the brand kit).
+A founder-led digital studio brand — website strategy, design, and
+development. This repository is the actively maintained JOMO Studio
+website: a multilingual (EN/RU/NL) Astro site with a homepage, a Work
+index, and per-project case studies.
 
-Everything JOMO-specific — code, content, and brand assets — lives
-inside this directory. Nothing JOMO-related belongs at the repository
-root; see the root `README.md` and `CLAUDE.md` for the full V1/V2
-boundary.
+See `docs/PROJECT.md` for verified project facts and development
+history, and `docs/DECISIONS.md` for architecture decisions (including
+how this project was extracted into its own repository — ADR-012).
+
+## Tech stack
+
+- [Astro](https://astro.build) (static output)
+- Tailwind CSS v4, configured via the `@theme` block in
+  `src/styles/global.css` (no separate `tailwind.config.*` file — v4
+  doesn't need one)
+- Astro Content Collections (schema-validated via Zod) for project/
+  case-study data
+
+## Languages
+
+English (default, unprefixed route), Russian (`/ru/`), Dutch (`/nl/`).
+Russian is the editorial source of truth for tone/facts; English and
+Dutch are independent, natural localizations of the same content, not
+literal translations — see `docs/DECISIONS.md` ADR-009.
 
 ## Project structure
 
 ```text
-v2/
+jomo-studio/
 ├── brand/                logo/wordmark/OG-card source assets — see brand/README.md
+├── docs/                 PROJECT.md, WORKFLOW.md, DECISIONS.md
 ├── public/               static assets, served as-is (images, favicon, og-image.png)
 ├── src/
 │   ├── components/       shared UI components
@@ -27,20 +41,29 @@ v2/
 │   ├── pages/             EN routes; RU/NL routes live under pages/ru/, pages/nl/;
 │   │                      also sitemap.xml.ts, robots.txt.ts, 404.astro
 │   └── styles/            global.css (design tokens, base styles)
-└── astro.config.mjs
+├── astro.config.mjs
+├── package.json
+└── tsconfig.json
 ```
 
-## Commands
+## Local development
 
-All commands run from `v2/`:
+```bash
+npm install
+npm run dev          # start local dev server at localhost:4321
+```
 
-| Command             | Action                                      |
-| :------------------ | :------------------------------------------- |
-| `npm install`        | Install dependencies                         |
-| `npm run dev`         | Start local dev server at `localhost:4321`   |
-| `npm run build`       | Build the production site to `./dist/`       |
-| `npm run preview`     | Preview the build locally                    |
-| `npx astro check`     | Type-check the project                       |
+When running through Claude Code, start the dev server in background
+mode (`astro dev --background`) and manage it with `astro dev stop`,
+`astro dev status`, and `astro dev logs`.
+
+## Build / check
+
+| Command | Action |
+| :--- | :--- |
+| `npx astro check` | Type-check the project |
+| `npm run build` | Build the production site to `./dist/` |
+| `npm run preview` | Preview the build locally |
 
 ## Adding a project
 
@@ -50,26 +73,25 @@ Add matching `src/content/projects/en/<slug>.json`,
 for the schema). Narrative fields (`problem`/`solution`/`outcome`) are
 optional — leave them unset rather than inventing content for a project
 that doesn't have a full case study yet. New projects automatically
-appear in `sitemap.xml` — no extra step needed.
+appear in `sitemap.xml` — no extra step needed. See `docs/PROJECT.md`
+for the truthfulness rules around case-study facts.
 
 ## Adding UI copy
 
 Add the string to the `en`, `ru`, and `nl` blocks in `src/i18n/ui.ts`,
-then reference it via `useTranslations(lang)`. Don't hardcode user-facing
-text into components.
+then reference it via `useTranslations(lang)`. Don't hardcode
+user-facing text into components.
 
 ## Deployment
 
-JOMO Studio V2 deploys via Vercel, connected to this GitHub repository:
+Deploys via Vercel, connected to this GitHub repository. Every feature
+branch gets an automatic Preview deployment; nothing reaches production
+until the repository owner explicitly approves merging to `main`. See
+`docs/WORKFLOW.md` for the full collaboration/handoff process.
 
-- **Source repository:** GitHub (this repo)
-- **Root Directory:** `v2`
-- **Production branch:** `main`
-- **Preview deployments:** automatic, for feature branches and pull
-  requests
+## Workflow
 
-This is separate from the V1 production site at the repository root,
-which continues to deploy through GitHub Pages.
-
-The Vercel Root Directory is confirmed set to `v2`, and preview
-deployments trigger automatically on every push to a feature branch.
+This repository follows an owner → ChatGPT (architect/reviewer) →
+Claude Code (implementer) collaboration model, with GitHub as the shared
+source of truth. See `CLAUDE.md` for agent-specific rules and
+`docs/WORKFLOW.md` for the full process.
