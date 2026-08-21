@@ -40,10 +40,22 @@ Tracking identity:
 
 This identifier is permanent for this version. A materially different future design/distribution experiment must use a new `utm_content` value (for example `card_v2`) and be registered in `docs/MARKETING.md`.
 
+## Archived files
+
+The approved binary deliverables for Batch 1 are archived in this directory:
+
+| File | SHA-256 |
+| --- | --- |
+| `JOMO_Studio_Business_Card_Print_Ready.pdf` (2 pages) | `1d73ed2e64d3213339d3a4622212f759424b88abfae92f833ebfd0ed1dbb58b1` |
+| `JOMO_Studio_Business_Card_Preview.pdf` (2 pages) | `5c4004d6fce5576aeb1543c8575f34078c85b9de772655397a70220c000c1e44` |
+| `jomo_business_card_qr.png` (910×910) | `81d4540146fc2996589f6fd8bfb4304b5603fe0f0a94ceca0a8362aad437fc2f` |
+
+The QR PNG was decoded and verified to resolve exactly to the tracked URL above.
+
 ## Source / reproduction notes
 
 The approved visual direction is the dark, minimal JOMO concept: official JOMO wordmark on the front, restrained brass accent, `WEB DEVELOPMENT` positioning; contact information and tracked QR on the reverse.
 
-The original print-ready and preview PDFs produced for Batch 1 are external binary deliverables. Keep the exact approved PDF files together with this repository checkout/archive when preparing the physical run. This directory records the authoritative content, dimensions, tracking destination and reproduction rules so the card can be regenerated without relying on chat history.
+This directory records the authoritative content, dimensions, tracking destination and reproduction rules so the card can be regenerated without relying on chat history.
 
 Before every reprint: verify production contact details, scan the final QR from the final exported artwork, confirm GA4 acquisition attribution, and run the checklist in `docs/MARKETING.md`.
