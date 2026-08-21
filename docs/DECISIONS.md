@@ -425,3 +425,20 @@ development history that explains *why* the site looks the way it does.
 
 **How to apply:** This repository is JOMO's only home going forward.
 Nothing JOMO-specific should be added back to `merxio-nl/PORTFOLIO`.
+
+---
+
+## ADR-013: GA4 analytics — production-only, gtag.js, delegated contact-click tracking
+
+**Date:** 2026-08-21
+**Status:** Accepted
+
+Google Analytics 4 (Measurement ID `G-4EZXY0FQH5`) was added to `src/layouts/Base.astro`, the single shared layout for every route, so it loads on all pages with no per-page work.
+
+1. **Production-only, gated by the existing `VERCEL_ENV` signal.** The gtag.js snippet and the click-tracking listener are both wrapped in the same `isProduction` check already used for the `noindex` tag (ADR-010) — local dev and every Vercel Preview stay untracked so their traffic never pollutes production data.
+2. **`window.gtag` assigned explicitly, not via a bare `function gtag(){}`.** Astro's `define:vars` directive wraps the script in an IIFE, so a plain top-level `function gtag(){}` declaration would stay local to that closure instead of becoming `window.gtag` — a real gap found while verifying the build output, not a hypothetical one. Assigning `window.gtag = function(){...}` directly avoids it.
+3. **Contact-click tracking via one delegated `document` listener, not per-component instrumentation.** A single click listener in `Base.astro` matches `mailto:`, `https://wa.me/`, `https://t.me/`, and `tel:` links anywhere in the page and fires a `contact_click` event (`method`, `link_url`). This covers the existing WhatsApp/Telegram/email links in `Footer.astro` and `ContactCta.astro` — and any future `tel:` link — without modifying those components.
+
+**Why:** The owner asked for GA4 across the whole site plus visibility into contact-intent clicks, with no design/copy/functionality changes. A single shared-layout snippet plus one delegated listener satisfies both with the smallest possible diff, and reuses the production/preview gating pattern already established for SEO indexing.
+
+**How to apply:** A future `tel:` link needs no extra tracking work — the delegated listener already matches it. A new outbound contact channel (a different domain/pattern) needs one more `href.startsWith(...)` branch in the same listener.
