@@ -37,6 +37,11 @@ const isProduction = process.env.VERCEL_ENV === 'production';
 // One neutral social card across all three locales for now — see
 // brand/README.md and docs/DECISIONS.md ADR-011 for why.
 const ogImageURL = new URL('/og-image.png', Astro.site).toString();
+
+// GA4 only loads on the actual Production deployment, gated by the same
+// VERCEL_ENV signal as the noindex tag above — local dev and every Vercel
+// Preview stay untracked so their traffic never pollutes production data.
+const gaMeasurementId = 'G-4EZXY0FQH5';
 ---
 
 <!doctype html>
@@ -44,6 +49,26 @@ const ogImageURL = new URL('/og-image.png', Astro.site).toString();
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    {
+      isProduction && (
+        <Fragment>
+          <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`} />
+          <script is:inline define:vars={{ gaMeasurementId }}>
+            window.dataLayer = window.dataLayer || [];
+            // define:vars wraps this script in an IIFE, so a plain
+            // `function gtag(){}` would stay local to that closure instead
+            // of becoming window.gtag — assign it explicitly so the
+            // click-tracking script (and GA's own tooling) can find it.
+            window.gtag = function () {
+              window.dataLayer.push(arguments);
+            };
+            window.gtag('js', new Date());
+            window.gtag('config', gaMeasurementId);
+          </script>
+        </Fragment>
+      )
+    }
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -137,5 +162,35 @@ const ogImageURL = new URL('/og-image.png', Astro.site).toString();
         revealTargets.forEach((el) => observer.observe(el));
       }
     </script>
+
+    {
+      isProduction && (
+        <script>
+          // Delegated listener catches every current and future contact
+          // link (email/WhatsApp/Telegram/phone) site-wide without needing
+          // per-component instrumentation — see docs/DECISIONS.md for the
+          // GA4 rollout.
+          document.addEventListener('click', (event) => {
+            const target = event.target;
+            if (!(target instanceof Element)) return;
+            const link = target.closest('a[href]');
+            if (!link) return;
+
+            const href = link.getAttribute('href') || '';
+            let method: string | null = null;
+            if (href.startsWith('mailto:')) method = 'email';
+            else if (href.startsWith('https://wa.me/')) method = 'whatsapp';
+            else if (href.startsWith('https://t.me/')) method = 'telegram';
+            else if (href.startsWith('tel:')) method = 'phone';
+            if (!method) return;
+
+            const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
+            if (typeof gtag === 'function') {
+              gtag('event', 'contact_click', { method, link_url: href });
+            }
+          });
+        </script>
+      )
+    }
   </body>
 </html>
